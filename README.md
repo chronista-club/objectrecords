@@ -19,7 +19,7 @@ See [CLAUDE.md](CLAUDE.md) for the core model and design principles.
 
 ## Brand
 
-`Object Records` originates as a record label founded by [@mako-357](https://github.com/mako-357) in 2008.
+`Object Records` originates as a record label founded by [@mako-357](https://github.com/mako-357) in 2006.
 The double entendre — *records of music* → *records of data* — frames the namespace.
 
 Domain: [objectrecords.io](https://objectrecords.io)
