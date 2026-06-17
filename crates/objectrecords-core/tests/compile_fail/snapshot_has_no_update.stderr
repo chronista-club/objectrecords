@@ -1,0 +1,8 @@
+error[E0599]: no method named `update` found for struct `Record<Snapshot>` in the current scope
+  --> tests/compile_fail/snapshot_has_no_update.rs:11:10
+   |
+11 |     snap.update(Body::Inline(vec![2]));
+   |          ^^^^^^ method not found in `Record<Snapshot>`
+   |
+   = note: the method was found for
+           - `Record<Mutable>`

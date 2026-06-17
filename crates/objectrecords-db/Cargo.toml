@@ -1,0 +1,29 @@
+[package]
+name = "objectrecords-db"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "SurrealDB persistence layer for Object Records (Phase 3)."
+readme = "../../README.md"
+
+[lints]
+workspace = true
+
+[dependencies]
+objectrecords-core = { workspace = true }
+
+chrono = { workspace = true }
+serde = { workspace = true }
+surrealdb = { workspace = true }
+surrealdb-types = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

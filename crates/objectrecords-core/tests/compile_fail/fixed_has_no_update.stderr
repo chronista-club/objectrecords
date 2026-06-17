@@ -1,0 +1,8 @@
+error[E0599]: no method named `update` found for struct `Record<Fixed>` in the current scope
+  --> tests/compile_fail/fixed_has_no_update.rs:12:11
+   |
+12 |     fixed.update(Body::Inline(vec![2]));
+   |           ^^^^^^ method not found in `Record<Fixed>`
+   |
+   = note: the method was found for
+           - `Record<Mutable>`

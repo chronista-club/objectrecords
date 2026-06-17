@@ -1,0 +1,19 @@
+/target
+**/*.rs.bk
+.DS_Store
+.direnv/
+*.swp
+
+# Local deploy secrets (never committed)
+.env
+.env.local
+.env.*.local
+
+# Cross-build staging (binary copied here before Dockerfile.slim COPY)
+/dist
+
+# surreal CLI history (local debug)
+history.txt
+
+# Per-user MCP config
+.mcp.json

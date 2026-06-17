@@ -1,0 +1,37 @@
+# Anything outside the src/ trees of each crate is irrelevant to the
+# Docker build context. This keeps the upload step fast and the layer
+# cache hits stable.
+
+# Cargo build artefacts (~GB scale).
+target/
+**/target/
+
+# Git state.
+.git/
+.gitignore
+.gitattributes
+
+# Editor / IDE / OS noise.
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Project documentation and design notes — rebuild image on doc tweaks
+# would be wasteful.
+docs/
+*.md
+!README.md
+
+# Claude Code session state.
+.claude/
+
+# CI / dev tooling not needed at build time.
+.github/
+
+# MCP / local config that may contain endpoints / credentials.
+.mcp.json
+
+# Workspace lockfile is required for reproducible builds — keep it.
+# (Cargo.lock is intentionally NOT ignored.)

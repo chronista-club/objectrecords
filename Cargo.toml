@@ -1,0 +1,66 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.95"
+authors = ["Chronista Club"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/chronista-club/objectrecords"
+homepage = "https://objectrecords.io"
+keywords = ["immutable", "data-store", "creo", "object-storage"]
+categories = ["database", "data-structures"]
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[workspace.dependencies]
+objectrecords-core = { version = "0.0.0", path = "crates/objectrecords-core" }
+objectrecords-storage = { version = "0.0.0", path = "crates/objectrecords-storage" }
+objectrecords-db = { version = "0.0.0", path = "crates/objectrecords-db" }
+objectrecords-api = { version = "0.0.0", path = "crates/objectrecords-api" }
+
+uuid = { version = "1", features = ["v7", "v4"] }
+bytes = "1"
+thiserror = "2"
+object_store = { version = "0.13", default-features = false, features = ["aws"] }
+url = "2"
+http = "1"
+# Phase 4.F (api crate POST /assets) — SHA-256 over uploaded bytes.
+# `sha2 = "0.10"` is the version already pulled in transitively via
+# surrealdb-core; pinning here keeps direct-dep + transitive aligned.
+sha2 = "0.10"
+# Phase 3 (db crate) — SurrealDB SDK with WebSocket + rustls only, no kv
+# backends. See decision #28 (Sub-Q1 β: surrealdb direct depend) and #29
+# (Sub-Q2 γ: hand-written DEFINE TABLE, no migration framework).
+surrealdb = { version = "3", default-features = false, features = ["protocol-ws", "rustls"] }
+# Phase 4.D-fix (2026-05-10): v3 SDK introduced the `SurrealValue` trait
+# requirement for `bind` / `take`; we depend on the proc-macro crate
+# directly so derive lives next to its trait. Major version aligned with
+# `surrealdb` to prevent drift.
+surrealdb-types = { version = "3" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
+# Phase 4 (api crate) — axum HTTP server + tower middleware + tracing.
+axum = "0.8"
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# Phase 4.D Step 3 (auth) — Auth0 JWT verify (RS256 + JWKS).
+# `ring` backend already in tree via surrealdb-types so no extra weight.
+jsonwebtoken = "9"
+
+# Test-only — db / storage crates use minimal `rt`; api crate extends
+# with `rt-multi-thread` / `net` / `signal` in its own Cargo.toml.
+trybuild = "1"
+tokio = { version = "1", features = ["macros", "rt"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }

@@ -1,0 +1,59 @@
+[package]
+name = "objectrecords-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "HTTP API server for Object Records (Phase 4 — axum)."
+readme = "../../README.md"
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "objectrecords-api"
+path = "src/main.rs"
+
+[dependencies]
+objectrecords-core = { workspace = true }
+objectrecords-db = { workspace = true }
+# Phase 4.F (Stage 3) — write endpoints need BlobStorage trait + S3CompatStorage
+# to accept POST /assets bodies and BlobRef-bearing records.
+objectrecords-storage = { workspace = true }
+
+axum = { workspace = true }
+# Phase 4.F (Stage 3) — POST /records `inline_b64` body field 復号 + 出力 base64。
+# base64 = 0.22 は dev-dependencies に既存、 同 version を normal deps に昇格。
+base64 = "0.22"
+bytes = { workspace = true }
+chrono = { workspace = true }
+jsonwebtoken = { workspace = true }
+# Phase 4.E — startup-time fetch of the Auth0 JWKS document when auth is
+# enabled. `rustls-tls` (no native-tls) keeps the build pure-Rust.
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+# Extends the workspace tokio feature set with the multi-thread runtime
+# needed for axum's `serve` plus `net` and `signal` for graceful
+# shutdown / TCP listening.
+tokio = { workspace = true, features = ["rt-multi-thread", "net", "signal"] }
+tower = { workspace = true }
+tower-http = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+# Test-only: synthesise an RSA-2048 keypair + JWKS for the Phase 4.D Step 3
+# auth middleware POC. Production runtime fetches the JWKS from Auth0.
+base64 = "0.22"
+http = { workspace = true }
+rand = "0.8"
+rsa = "0.9"

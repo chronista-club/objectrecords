@@ -1,0 +1,44 @@
+# syntax=docker/dockerfile:1.7
+# Slim runtime-only Dockerfile for `objectrecords-api`.
+#
+# 前提: binary は事前に Mac (darwin/arm64) → linux/amd64 へ cross-compile 済:
+#
+#   cargo zigbuild --release --target x86_64-unknown-linux-gnu --bin objectrecords-api
+#   cp target/x86_64-unknown-linux-gnu/release/objectrecords-api dist/
+#
+# このパターン (chronista-style:cross-build-image) は Mac M-series での
+# 開発ループを劇的に高速化する:
+#   - Mac ARM ネイティブ速度で cargo build (zig が glibc 互換 linker を提供)
+#   - Dockerfile.slim 側はランタイム層 (apt-get + COPY binary) のみで
+#     エミュレーション下の重い cargo build を回避
+#   - 2 回目以降の image 更新は秒単位
+#
+# 既存の Dockerfile (cargo in-container)
+# は historical 残置、 段階的に廃止。
+
+ARG DEBIAN_VERSION=bookworm
+
+FROM --platform=linux/amd64 debian:${DEBIAN_VERSION}-slim AS runtime
+
+# Runtime dependencies (Dockerfile §runtime と同じ):
+#   - ca-certificates: HTTPS calls (Phase 4.E JWKS fetch、 SurrealDB wss)
+#   - libssl3 + libgcc-s1: surrealdb client が rustls 設定でも glibc loader
+#     が libssl symbol を transitive に要求するため (belt-and-braces)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates libssl3 \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 1000 --shell /bin/bash app
+
+# zigbuild で cross-compile 済の binary を COPY (build context ./dist/)。
+COPY dist/objectrecords-api /usr/local/bin/objectrecords-api
+
+USER app
+WORKDIR /home/app
+
+# Server config defaults — a reverse proxy override at deploy time。
+ENV OBJECTRECORDS_API_BIND=0.0.0.0:8000 \
+    RUST_LOG=info,objectrecords_api=debug
+
+EXPOSE 8000
+
+ENTRYPOINT ["/usr/local/bin/objectrecords-api"]
